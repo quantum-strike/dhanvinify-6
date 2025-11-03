@@ -1,20 +1,77 @@
-<div style="background-image: linear-gradient(#e1004fae, #571ce2ab); width: 80%; margin: auto; border-radius: 20px; padding: 10px;">
-  <h1 style="display: inline-block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 99%;">{{artist_name}}</h1>
+<!-- Revamped Artist Page -->
+<style>
+  :root { --bg: #121212; --bg-soft: #1e1e1e; --text: #e6e6e6; --muted: #aaaaaa; --accent: #1db954; --danger: #e74c3c; --border: #2a2a2a; }
+  .page { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
+  .artist-header { background: linear-gradient(135deg, #e1004f66, #571ce266); border: 1px solid var(--border); border-radius: 14px; padding: 20px; display: grid; grid-template-columns: 80px 1fr; gap: 16px; align-items: center; box-shadow: 0 8px 24px rgba(0,0,0,0.35); }
+  .avatar { width: 80px; height: 80px; border-radius: 50%; background: #0b0b0b; border: 1px solid var(--border); display: grid; place-items: center; font-weight: 800; font-size: 28px; color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,.6); overflow: hidden; }
+  .artist-meta h1 { margin: 0 0 6px; font-size: 28px; font-weight: 800; letter-spacing: .2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .artist-meta .sub { color: var(--muted); font-size: 14px; }
+  .content { margin-top: 24px; display: grid; grid-template-columns: 1fr; gap: 16px; }
+  .panel { background: var(--bg-soft); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  table.tracklist { width: 100%; border-collapse: collapse; }
+  table.tracklist th, table.tracklist td { padding: 12px 14px; border-bottom: 1px solid var(--border); }
+  table.tracklist th { color: var(--muted); text-transform: uppercase; letter-spacing: .04em; font-size: 12px; }
+  table.tracklist tr:hover { background: #242424; }
+  .icon-btn { background: transparent; border: 1px solid var(--border); color: var(--text); width: 34px; height: 34px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: .15s ease; }
+  .icon-btn:hover { border-color: #3a3a3a; transform: translateY(-1px); }
+  .thumb { width: 40px; height: 40px; border-radius: 4px; object-fit: cover; background: #0b0b0b; border: 1px solid var(--border); }
+  @media (max-width: 600px) {
+    .artist-header { grid-template-columns: 60px 1fr; padding: 14px; }
+    .avatar { width: 60px; height: 60px; font-size: 22px; }
+    .artist-meta h1 { font-size: 22px; }
+  }
+  /* Keep class and data-attrs consistent with playlist page for right-click menu compatibility */
+</style>
 
-</div>
-  <div style="padding-left: 10%; padding-right: 10%; padding-bottom: 10%;">
-    <br>
-    {% for song in song_list %}
-    <div class="card greyish-back" style="text-align: start; border: 1px solid white;">
-      <div class="card-body">
-        <img src="{{ song['image'] }}" alt="" style="width:25px; border-radius: 5px;">
-        <button onclick="startSong({{ song['id'] }})" style="text-align: left; background-color: transparent; color: white; border-style: none; display: inline-block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 90%;">{{ song['name'] }}</button>
-
-      </div>
+<div class="page">
+  <div class="artist-header">
+    <div class="avatar" aria-hidden="true">
+      {{ artist_name[:1] if artist_name else '♪' }}
     </div>
-    <br>
-    {% endfor %}
+    <div class="artist-meta" style="text-align:left; display: flex; align-items: center; gap: 16px;">
+      <div>
+        <h1 title="{{ artist_name }}">{{ artist_name }}</h1>
+        <div class="sub">{{ song_list|length if song_list is defined else 0 }} songs</div>
+      </div>
+      <button class="icon-btn" title="Play all songs by this artist" onclick="playfromPlaylist('artist', '{{ artist_name|escape }}', '{{ song_list[0].id if song_list|length > 0 else '' }}')">
+        <i class="fa-solid fa-play"></i>
+      </button>
+    </div>
   </div>
-  <body onload="setStatus()" check="{{check}}">
-  </body>
+
+  <div class="content">
+    <div class="panel">
+      <table class="tracklist">
+        <thead>
+          <tr>
+            <th style="width:60px;">Cover</th>
+            <th>Title</th>
+            <th>Artist</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for song in song_list %}
+          <tr onclick="playfromPlaylist('artist', this.dataset.searchedArtist, this.dataset.songId)" class="data-track-artist" data-song-id="{{ song.id }}" data-searched-artist="{{ artist_name }}" data-artist="{{ song.artist }}" data-name="{{ song.name }}"               draggable="true"
+              ondragstart="onSongRowDragStart(event)"
+              ondragend="onSongRowDragEnd(event)"
+              aria-grabbed="false"
+              role="row">  
+            <td>
+              <img class="thumb" src="{{ song.image }}" alt="Cover"
+                   loading="lazy" referrerpolicy="no-referrer"
+                   onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'40\' height=\'40\'><rect width=\'100%\' height=\'100%\' fill=\'%231e1e1e\'/><text x=\'50%\' y=\'55%\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-size=\'16\' fill=\'%23666\'>♪</text></svg>'" />
+            </td>
+            <td>{{ song.name }}</td>
+            <td>{{ song.artist }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Context menu handled globally by unified script -->
+
+<body onload="setStatus()" check="{{check}}"></body>
 

@@ -1,177 +1,212 @@
 
-<!-- Button trigger modal -->
-<!-- Modal -->
-<!-- <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title" id="myModalLabel">Modal Title</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <table class="table">
-              <thead>
-                <tr>
-                  <th scope="col"></th>
-                  <th scope="col">Title</th>
-                  <th scope="col">Artist</th>
-                  <th scope="col">Playlist</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for song in all_songs %}
-                <tr>
-                  <td><a class="btn btn-outline-secondary btn-sm" role="button" aria-disabled="true" href="/play?p={{song['id']}}"><i class="fa-solid fa-circle-play"></i></a></td>
-                  <td>{{song['name']}}</td>
-                  <td>{{song['artist']}}</td>
-                  <td>
-                    <a href="/add?song={{song['id']}}&list={{play_id}}" class="btn btn-outline-success"><i class="fa-solid fa-plus"></i></a>
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          </div>
-      </div>
-  </div>
-</div> -->
+<!-- Revamped Playlist Page -->
+<style>
+  :root { --bg: #121212; --bg-soft: #1e1e1e; --text: #e6e6e6; --muted: #aaaaaa; --accent: #1db954; --danger: #e74c3c; --border: #2a2a2a; }
+  .page { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
+  .playlist-header { display: grid; grid-template-columns: 180px 1fr; gap: 20px; align-items: center; }
+  .cover-wrap { position: relative; width: 180px; height: 180px; border-radius: 8px; overflow: hidden; background: #0b0b0b; box-shadow: 0 8px 24px rgba(0,0,0,0.35); }
+  .cover-wrap img { width: 100%; height: 100%; object-fit: cover; display: none; }
+  .cover-fallback { display: grid; width: 100%; height: 100%; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
+  .cover-fallback div { background-size: cover; background-position: center; }
+  .cover-fallback div:nth-child(1) { background: linear-gradient(135deg, #2b2b2b, #1a1a1a); }
+  .cover-fallback div:nth-child(2) { background: linear-gradient(135deg, #222, #151515); }
+  .cover-fallback div:nth-child(3) { background: linear-gradient(135deg, #1f1f1f, #0f0f0f); }
+  .cover-fallback div:nth-child(4) { background: linear-gradient(135deg, #262626, #121212); }
 
-<div class="modal-play" id="modal-play">
-  <h2>Add songs</h2>
-  <button onclick="document.getElementById('modal-play').style.display='none'" class="btn btn-outline-danger">Close</button>
+  .playlist-meta h1 { margin: 0 0 6px; font-size: 28px; font-weight: 700; }
+  .playlist-meta .sub { color: var(--muted); font-size: 14px; }
+  .actions { margin-top: 14px; display: flex; gap: 10px; }
+  .btn { border: 1px solid var(--border); color: var(--text); background: var(--bg-soft); padding: 8px 12px; border-radius: 6px; cursor: pointer; transition: .15s ease; }
+  .btn:hover { transform: translateY(-1px); border-color: #3a3a3a; }
+  .btn-primary { background: var(--accent); border-color: var(--accent); color: #000; font-weight: 600; }
+  .btn-danger { border-color: #8a2f27; color: #fff; background: #a23b31; }
+  .content { margin-top: 24px; display: grid; grid-template-columns: 1fr; gap: 16px; }
+  .panel { background: var(--bg-soft); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  /* Search panel */
+  .search-panel { padding: 12px; }
+  .search-wrap { display: flex; align-items: center; gap: 10px; }
+  .search-input { flex: 1; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); background: #161616; color: var(--text); outline: none; transition: border-color .15s ease; }
+  .search-input:focus { border-color: #3a3a3a; }
+  .search-clear { white-space: nowrap; }
+  table.tracklist { width: 100%; border-collapse: collapse; }
+  table.tracklist th, table.tracklist td { padding: 12px 14px; border-bottom: 1px solid var(--border); }
+  table.tracklist th { color: var(--muted); text-transform: uppercase; letter-spacing: .04em; font-size: 12px; }
+  table.tracklist tr:hover { background: #242424; }
+  .cell-actions { text-align: right; white-space: nowrap; }
+  .icon-btn { background: transparent; border: 1px solid var(--border); color: var(--text); width: 34px; height: 34px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; }
+  .icon-btn:hover { border-color: #3a3a3a; }
+  .thumb { width: 40px; height: 40px; border-radius: 4px; object-fit: cover; background: #0b0b0b; border: 1px solid var(--border); }
+  /* Drag-and-drop feedback */
+  table.tracklist tr.dragging { opacity: .6; }
+  table.tracklist tr[draggable="true"] { cursor: grab; }
+  table.tracklist tr[draggable="true"]:active { cursor: grabbing; }
+  /* Context menu */
+  .ctx-menu { position: fixed; z-index: 9999; background: #202020; color: var(--text); border: 1px solid var(--border); border-radius: 8px; min-width: 200px; box-shadow: 0 12px 32px rgba(0,0,0,0.45); display: none; overflow: hidden; }
+  .ctx-item { padding: 10px 12px; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+  .ctx-item:hover { background: #2a2a2a; }
+  .divider { height: 1px; background: var(--border); margin: 4px 0; }
+  /* Modal (existing) */
+  .modal-play { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 40; width: min(900px, 92vw); max-height: 80vh; overflow: auto; background: #181818; border: 1px solid var(--border); border-radius: 12px; padding: 16px; box-shadow: 0 16px 48px rgba(0,0,0,.6); }
+  /* Custom modal for Icon Picker */
+  .custom-modal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; z-index: 1050; }
+  .custom-modal.is-open { display: flex; }
+  .custom-modal-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.6); }
+  .custom-modal-dialog { position: relative; background: #181818; color: var(--text); border: 1px solid var(--border); border-radius: 12px; width: min(520px, 92vw); max-height: 80vh; display: flex; flex-direction: column; box-shadow: 0 16px 48px rgba(0,0,0,.6); }
+  .custom-modal-header, .custom-modal-footer { padding: 12px 16px; border-bottom: 1px solid var(--border); }
+  .custom-modal-header { display:flex; align-items:center; justify-content: space-between; }
+  .custom-modal-footer { border-bottom: 0; border-top: 1px solid var(--border); display:flex; gap:8px; justify-content: flex-end; }
+  .custom-modal-body { padding: 14px 16px; }
+  .custom-modal-close { background: transparent; border: 1px solid var(--border); color: var(--text); width: 32px; height: 32px; border-radius: 8px; cursor: pointer; }
+  .custom-modal-close:hover { border-color: #3a3a3a; }
+  .icon-picker-input { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); background: #161616; color: var(--text); outline: none; }
+  .icon-picker-input:focus { border-color: #3a3a3a; }
+  /* Custom Icon Picker UI */
+  .iconpicker-toolbar { display:flex; gap:8px; align-items:center; margin-bottom:10px; flex-wrap:wrap; }
+  .iconpicker-search { flex: 1; min-width: 180px; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border); background:#161616; color:var(--text); outline: none; }
+  .iconpicker-search:focus { border-color:#3a3a3a; }
+  .iconpicker-filter { padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border); background:#161616; color:var(--text); }
+  .iconpicker-preview { display:flex; align-items:center; gap:10px; padding:8px 10px; border:1px solid var(--border); background:#141414; border-radius:8px; margin-bottom:10px; }
+  .iconpicker-preview i { font-size: 22px; }
+  .icon-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap:8px; max-height: 48vh; overflow:auto; padding: 6px; border:1px solid var(--border); border-radius:10px; background:#141414; }
+  .icon-item { display:flex; flex-direction:column; align-items:center; gap:6px; padding:10px 6px; cursor:pointer; border:1px solid transparent; border-radius:8px; color:var(--text); user-select:none; background-color: transparent;}
+  .icon-item:hover { border-color:#3a3a3a; background:#1c1c1c; }
+  .icon-item.selected { border-color: var(--accent); background: #0e2a1d; }
+  .icon-item i { font-size: 20px; }
+  .icon-label { font-size: 11px; line-height: 1.15; color:#aaa; text-align:center; word-break: break-all; }
+  /* Responsive */
+  @media (max-width: 600px) {
+    .playlist-header { grid-template-columns: 120px 1fr; gap: 12px; }
+    .cover-wrap { width: 120px; height: 120px; }
+    .playlist-meta h1 { font-size: 22px; }
+  }
+</style>
 
-  <table class="table" style="color: white;">
-    <thead>
-      <tr>
-        <th scope="col"></th>
-        <th scope="col">Title</th>
-        <th scope="col">Artist</th>
-        <th scope="col">Playlist</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for song in all_songs %}
-      <tr>
-        <td><a class="btn btn-outline-secondary btn-sm" role="button" aria-disabled="true" onclick="playfromPlaylist({{play_id}}, {{song['id']}})"><i class="fa-solid fa-circle-play"></i></a></td>
-        <td>{{song['name']}}</td>
-        <td>{{song['artist']}}</td>
-        <td>
-          <button onclick="add_deleteSong({{song['id']}}, {{play_id}}, true)" class="btn btn-outline-success"><i class="fa-solid fa-plus"></i></button>
-
-          <!-- <a href="/add?song={{song['id']}}&list={{play_id}}" class="btn btn-outline-success"><i class="fa-solid fa-plus"></i></a> -->
-        </td>
-      </tr>
+<div class="page">
+  <div class="playlist-header">
+    <div class="cover-wrap">
+      <img id="playlist-cover" alt="Playlist cover" style="display:none" />
+      <div id="playlist-cover-fallback" class="cover-fallback" style="display:grid">
+      {% set imgs = list|default([]) %}
+      {% for i in range(4) %}
+        {% if imgs|length > i and imgs[i]['image'] is defined and imgs[i]['image'] %}
+          <div style="background-image: url('{{ imgs[i]['image']|e }}'); background-size: cover; background-position: center; background-repeat: no-repeat;"></div>
+        {% else %}
+          <div></div>
+        {% endif %}
       {% endfor %}
-    </tbody>
-  </table>
-</div>
-<!-- <style>
-  /* Custom icon styles */
-  #controls button {
-    font-size: 24px;
-    background: none;
-    border: none;
-    color: #007bff;
-    cursor: pointer;
-    margin: 0 10px;
-  }
+      </div>
+    </div>
+    <div class="playlist-meta" style="text-align:left">
+      <h1>{{ song_name or 'Playlist' }}</h1>
+      <div class="sub">{{ list|length if list is defined else 0 }} songs • ID {{ play_id }}</div>
+      <div class="actions">
+        <button class="btn btn-primary" onclick="playPlaylist({{play_id}}, false)"><i class="fas fa-play"></i> Play</button>
+        <button class="btn btn-primary" onclick="playPlaylist({{play_id}}, true)"><i class="fa-solid fa-shuffle"></i></button>
+        <button class="btn" id="btnEditIcon" type="button"><i class="fas fa-edit"></i></button>
+      </div>
+    </div>
+  </div>
 
-  #controls button:hover {
-    color: #0056b3;
-  }
-
-  #controls button:focus {
-    outline: none;
-  }
-
-  #volume-container {
-    display: flex;
-    align-items: center;
-    margin-left: 10px;
-  }
-
-  #volume-slider {
-    margin-left: 5px;
-    width: 100px;
-  }
-</style> -->
-
-<h1>{{song_name}}</h1>
-<h5 id="duration"></h5>
-<button onclick="playPlaylist({{play_id}})" style="border-style: none; background: #121212; font-size:24px" class="text-white"><i class="fas fa-play"></i></button>
-<h5 id="duration"></h5>
-<div id="player-container">
-  <!-- <img id="album-art" src="" alt="Album Art" /> -->
-  <!-- <div id="song-info">
-    <p id="song-name">Song Name</p>
-    <p id="song-artist">Artist Name</p>
-  </div> -->
-  <!-- <audio id="player" preload="metadata"></audio> -->
-  <div id="controls">
-    <!-- <button id="prev-button"><i class="fas fa-backward"></i></button>
-    <button id="play-pause-button"><i class="fas fa-play"></i></button>
-    <button id="next-button"><i class="fas fa-forward"></i></button>
+  <div class="content">
     {% if check == 0 %}
-    <br>
-    <button id="shuffle-button"><i class="fa-solid fa-shuffle"></i></button>
-    <button id="loop-button" onclick="loopToggle()"><i class="fa-solid fa-infinity"></i></button>
-    {% endif %} -->
-    <!-- Volume Control -->
+    <!-- Playlist search -->
+    <div class="panel search-panel" role="search">
+      <div class="search-wrap">
+        <label for="playlist-search" class="sr-only" style="position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden;">Search in playlist</label>
+        <input id="playlist-search" class="search-input" type="text" placeholder="Search this playlist" autocomplete="off" />
+        <button type="button" class="btn search-clear" id="playlist-search-clear" aria-label="Clear search" title="Clear">Clear</button>
+      </div>
+    </div>
+    <div class="panel">
+      <table class="tracklist">
+        <thead>
+          <tr>
+            <th style="width:56px;">Cover</th>
+            <th>Title</th>
+            <th>Artist</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for song in list %}
+          <tr onclick="playfromPlaylist('playlist', +this.dataset.playId, +this.dataset.songId);"
+              class="data-track"
+              data-play-id="{{ play_id }}"
+              data-song-id="{{song['id']}}"
+              data-artist="{{song['artist']}}"
+              data-name="{{song['name']}}"
+              draggable="true"
+              ondragstart="onSongRowDragStart(event)"
+              ondragend="onSongRowDragEnd(event)"
+              aria-grabbed="false"
+              role="row">
+            <td>
+              <img class="thumb" src="{{ song['image'] }}" alt="Cover"
+                   loading="lazy" referrerpolicy="no-referrer"
+                   onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'40\' height=\'40\'><rect width=\'100%\' height=\'100%\' fill=\'%231e1e1e\'/><text x=\'50%\' y=\'55%\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-size=\'16\' fill=\'%23666\'>♪</text></svg>'" />
+            </td>
+            <td>{{song['name']}}</td>
+            <td>{{song['artist']}}</td>
+          </tr>
+          {% endfor %}
+          <!-- No results row (shown when filter yields 0 matches) -->
+          <tr id="no-results-row" style="display:none">
+            <td colspan="3" style="color: var(--muted); text-align:center; padding: 20px;">No matching songs</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
   </div>
+</div>
 
-  <br>
-  <br>
-  {% if check == 0 %}
-  <ul class="list-group">
-    <table class="table text-white greyish-back">
-      <thead>
-        <tr>
-          <th scope="col"></th>
-          <th scope="col">Title</th>
-          <th scope="col">Artist</th>
-          <th scope="col">
-            <button class="btn btn-primary" onclick="document.getElementById('modal-play').style.display='block'">Edit</button>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for song in list %}
-        <tr >
-          <td><button class="btn btn-outline-secondary btn-sm" role="button" aria-disabled="true" onclick="playfromPlaylist({{play_id}}, {{song['id']}})"><i class="fa-solid fa-circle-play"></button></td>
-          <td>{{song['name']}}</td>
-          <td>{{song['artist']}}</td>
-          <td>
-            <button onclick="add_deleteSong({{song['id']}}, {{play_id}}, true)" class="btn btn-outline-danger"><i class="fa-solid fa-minus"></i></button>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </ul>
+<!-- Add Songs Modal (existing table retained) -->
+
+
+<!-- Context menu handled globally by unified script -->
+
+<body onload="setStatus()" check="{{check}}"></body>
+
+<!-- Lightweight data carrier for JS -->
+<div id="page-data" data-play-id="{{ play_id }}" style="display:none"></div>
+
+<!-- Inline data for images to avoid JS/Jinja mixing issues -->
+<script id="playlist-images" type="application/json">{% if list is defined %}{{ list|selectattr('image','defined')|map(attribute='image')|list|tojson }}{% else %}[]{% endif %}</script>
+
+<!-- Icon Picker Modal (custom, no Bootstrap dependency) -->
+<div class="custom-modal" id="iconPickerModal" aria-hidden="true">
+  <div class="custom-modal-backdrop" onclick="window.closeIconPicker && window.closeIconPicker()"></div>
+  <div class="custom-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="iconPickerTitle">
+    <div class="custom-modal-header">
+      <h5 id="iconPickerTitle" style="margin:0">Choose playlist icon</h5>
+      <button class="custom-modal-close" aria-label="Close" onclick="window.closeIconPicker && window.closeIconPicker()">×</button>
+    </div>
+    <div class="custom-modal-body">
+      <div class="mb-2" style="font-size: 13px; color:#aaa;">Search and pick a Font Awesome icon:</div>
+
+      <div class="iconpicker-toolbar">
+        <input id="iconSearch" type="search" class="iconpicker-search" placeholder="Search icons (e.g., music, heart, star)" autocomplete="off" />
+        <select id="iconStyleFilter" class="iconpicker-filter" title="Style">
+          <option value="all">All styles</option>
+          <option value="fas">Solid (fas)</option>
+          <option value="far">Regular (far)</option>
+          <option value="fab">Brands (fab)</option>
+        </select>
+      </div>
+
+      <div class="iconpicker-preview" style="display: none;">
+        <i id="iconPreview" class="fas fa-music" aria-hidden="true"></i>
+        <div style="flex:1; min-width:0;">
+          <div style="font-size:12px; color:#888;">Selected class</div>
+          <input id="playlistIconInput" type="text" class="icon-picker-input" placeholder="e.g., fas fa-music" autocomplete="off" />
+        </div>
+      </div>
+
+      <div id="iconGrid" class="icon-grid" role="listbox" aria-label="Icon choices"></div>
+    </div>
+    <div class="custom-modal-footer">
+      <button type="button" class="btn" onclick="window.closeIconPicker && window.closeIconPicker()">Cancel</button>
+      <button type="button" class="btn btn-primary" id="savePlaylistIcon">Save</button>
+    </div>
   </div>
-
-  {% endif %}
-  <body onload="setStatus()" check="{{check}}">
-  </body>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const player = document.getElementById('player');
-      const volumeSlider = document.getElementById('volume-slider');
-
-      // Set initial volume
-      player.volume = volumeSlider.value / 100;
-
-      volumeSlider.addEventListener('input', function() {
-        player.volume = this.value / 100;
-      });
-
-      // Update volume slider when volume changes programmatically
-      player.addEventListener('volumechange', function() {
-        volumeSlider.value = player.volume * 100;
-      });
-    });
-  </script>
+</div>
 

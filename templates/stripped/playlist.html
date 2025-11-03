@@ -1,29 +1,151 @@
 
 <style>
-    .card{
-        margin: auto;
-        max-width: 500%;
-    }
+  /* Layout */
+  .playlists-wrap {
+    margin: 20px;
+    max-width: 1100px;
+  }
+  .playlists-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 14px;
+  }
+
+  /* Cards */
+  .playlist-card {
+    background: #2c2c2c;
+    border-radius: 12px;
+    padding: 14px;
+    color: #fff;
+    box-shadow: 0 2px 10px rgba(0,0,0,.25);
+    transition: transform .12s ease, background .12s ease, box-shadow .12s ease;
+    outline: none;
+  }
+  .playlist-card:hover {
+    transform: translateY(-2px);
+    background: #343434;
+    box-shadow: 0 6px 18px rgba(0,0,0,.35);
+  }
+  .playlist-card:focus-visible {
+    box-shadow: 0 0 0 3px rgba(29,185,84,.4);
+  }
+  .playlist-title {
+    font-weight: 700;
+    margin: 0 0 4px;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .playlist-sub {
+    color: #b3b3b3;
+    margin: 0 0 10px;
+    font-size: .9rem;
+  }
+  .playlist-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .btn-minor {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,.18);
+    color: #fff;
+    padding: 6px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .btn-minor:hover { border-color: rgba(255,255,255,.35); }
+  .btn-ghost {
+    background: transparent;
+    color: #fff;
+    border: none;
+    padding: 6px;
+    border-radius: 8px;
+    line-height: 0;
+  }
+  .btn-ghost:hover { background: rgba(255,255,255,.08); }
+
+  /* Context Menu */
+  .ctx-menu {
+    position: fixed;
+    z-index: 9999;
+    min-width: 180px;
+    background: #1f1f1f;
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 10px;
+    box-shadow: 0 8px 28px rgba(0,0,0,.45);
+    padding: 6px;
+    display: none;
+  }
+  .ctx-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 8px 10px;
+    color: #eaeaea;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    text-align: left;
+    cursor: pointer;
+  }
+  .ctx-item:hover { background: rgba(255,255,255,.08); }
+  .ctx-sep {
+    height: 1px;
+    margin: 4px 6px;
+    background: rgba(255,255,255,.1);
+    border: none;
+  }
+
+  /* Empty state */
+  .empty-state {
+    margin: 20px auto;
+    max-width: 600px;
+    text-align: center;
+    color: #ffab76;
+  }
+  .header-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
 </style>
 
-    <h1>Your Playlists <h3><span class="badge text-bg-secondary"><a href="/add_playlist" style="color: white; text-decoration: none;">New</a></span></h3></h1>
-    {{message}}
-    {% if check == 'none'%}
-    <br>
-    <h4 style="color: coral;">Nothing here to show!</h4>
-    {% else %}
-        <br>
-        {% for song in songs %}
-        <div class="card" style="width: 18rem; background-color:#414141">
-            <div class="card-body">
-              <h5 class="card-title"><strong>{{song['name']}}</strong></h5>
-              <h6 class="card-subtitle mb-2 text-body-secondary">By {{name}}</h6>
-              <button ontouchstart="openURL('/html/playlist?p={{ song['id'] }}')" class="card-link">Listen</button>
-              <!-- <a style="color: lightcoral;" href="/del_playlist?id={{song['id']}}" class="card-link">Delete Playlist</a> -->
-            </div>
+<div class="playlists-wrap" id="pl-root" data-initial-count="{{ 0 if check == 'none' else (songs|length) }}">
+  <div class="header-bar">
+    <h1 style="margin:0;">Your Playlists</h1>
+    <button class="btn-minor" onclick="createNewPlaylist(this)">New</button>
+  </div>
+  {{message}}
+
+  {% if check == 'none' %}
+    <div class="empty-state">
+      <h4 style="margin-bottom:10px;">Nothing here to show</h4>
+      <button class="btn-minor" onclick="createNewPlaylist(this)">Create your first playlist</button>
+    </div>
+  {% else %}
+    <div class="playlists-grid">
+      {% for song in songs %}
+        <article class="playlist-card" tabindex="0" role="button"
+                 data-pl-id="{{ song.id }}" data-pl-name="{{ song.name }}">
+          <h5 class="playlist-title">{{ song.name }}</h5>
+          <p class="playlist-sub">By {{ name }}</p>
+          <div class="playlist-actions">
+            <button class="btn-minor" onclick="openURL('/html/playlist?p={{ song.id }}')">Open</button>
+            <button class="btn-ghost" aria-label="More actions" title="More actions" data-menu-trigger>
+              <i class="fa-solid fa-ellipsis-vertical"></i>
+            </button>
           </div>
-          <br>
-        </li>
-        {% endfor %}
-    {% endif %}
+        </article>
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>
+
+<!-- Context menu handled globally by unified script -->
 

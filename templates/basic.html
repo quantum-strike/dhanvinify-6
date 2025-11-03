@@ -18,6 +18,15 @@
 
     <title>DhanTune</title>
 </head>
+<style>
+  .drop-hover {
+border: 5px dashed #1DB954;
+border-radius: 10px;
+outline-offset: 2px;
+background-color: rgba(29, 185, 84, 0.12);
+}
+</style>
+
 <body>
     <!-- <div class="top_bar">
 
@@ -44,15 +53,16 @@
             function increaseWidth() {
               if (width >= 100) {
                 bar.style.width = `${width}%`
-                setTimeout(() => {
-                  document.getElementById('loading').style.display = 'none'; // Hide loading element
-                }, 500);
-                return; // Stop if width is 100 or more
+                document.getElementById('loading').style.display = 'none'
+                // setTimeout(() => {
+                //   document.getElementById('loading').style.display = 'none'; // Hide loading element
+                // }, 0);
+                // return; // Stop if width is 100 or more
               }
 
               bar.style.width = `${width}%`; // Set the width of the bar
               width += 10; // Increment the width
-              setTimeout(increaseWidth, 750); // Call the function again after 1 second
+              setTimeout(increaseWidth, 0); // Call the function again after 1 second
             }
 
             increaseWidth();
@@ -62,62 +72,7 @@
     </div>
   </div>
   <!-- The Modal -->
-  <div class="modal fade " id="myModal">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-      <div class="modal-content" style="background-color: #121212; color:white">
 
-        <!-- Modal Header -->
-        <div class="modal-header" style="text-align: center;">
-          <h4 class="modal-title">What's New</h4>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-
-        <!-- Modal body -->
-        <div class="modal-body" style="text-align:left; width:100%;">
-            <div class="card greyish-back" style="border: 1px solid white; ">
-                <div class="card-body">
-                  Lots of bugs have been fixed
-                </div>
-              </div>
-              <br>
-              <div class="card greyish-back" style="border: 1px solid white; ">
-                <div class="card-body">
-                  We listened! Songs now continue from where you select in playlists!
-                </div>
-              </div>
-              <br>
-              <div class="card greyish-back" style="border: 1px solid white; ">
-                <div class="card-body">
-                  New artist search and pages
-                </div>
-              </div>
-              <br>
-              <div class="card greyish-back" style="border: 1px solid white; ">
-                <div class="card-body">
-                  Redesigned tooltips
-                </div>
-              </div>
-              <div class="card greyish-back" style="border: 1px solid white; ">
-                <div class="card-body">
-                  Time summary in playlists
-                </div>
-              </div>
-              <div class="card greyish-back" style="border: 1px solid white; ">
-                <div class="card-body">
-                  New settings page where you can change you profile icon!
-                </div>
-              </div>
-
-        </div>
-
-        <!-- Modal footer -->
-        <div class="modal-footer" >
-          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Back to Music!</button>
-        </div>
-
-      </div>
-    </div>
-  </div>
     <div class="offcanvas offcanvas-end custom-offcanvas" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
         <div class="offcanvas-header text-white greyish-back">
           <h5 class="offcanvas-title" id="offcanvasRightLabel">{{song_name}} - <strong>Queue</strong></h5>
@@ -148,8 +103,7 @@
     <div class="w3-bar" style="height: 70px; background-color:#000; position: fixed">
         <button onclick="openURL('/html/home')" class="w3-bar-item w3-hover-none w3-button w3-text-white w3-hover-text-white" style="margin-left: 25px;margin-right: 25px;"><img src="/static/icon-512.png" alt="" id="icon"></button>
         <button onclick="openURL('/html/home')" class="w3-bar-item w3-button w3-hover-none w3-text-white w3-hover-text-white" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Home"> <i class="fa fa-home"></i></button>
-        <button onclick="openURL('/html/report')" class="w3-bar-item w3-button w3-hover-none w3-text-white w3-hover-text-white" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Report"><i class="material-icons">contact_support</i></button>
-        <button onclick="openURL('/html/request')" class="w3-bar-item w3-button w3-hover-none w3-text-white w3-hover-text-white" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Request"><i class="material-icons">forum</i></button>
+        <button onclick="openURL('/html/browse')" class="w3-bar-item w3-button w3-hover-none w3-text-white w3-hover-text-white" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Browse"><i class="material-icons">forum</i></button>
         <a href="/settings" class="w3-bar-item w3-button w3-hover-none w3-text-white w3-hover-text-white" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Settings"><i class="material-icons">settings</i></a>
 
         <div id="Demo" class="">
@@ -222,18 +176,31 @@
             </div>
         </div>
     </div> -->
-    <div class="w3-sidebar w3-bar-block dhan-sidbar" style="width:100px; height: calc(100vh - 200px);top: 70px; left:10px; text-align:center; background-color:#121212; border-radius: 20px;">
+    <div id="w3-sidebar" class="w3-sidebar w3-bar-block dhan-sidbar" style="width:100px; height: calc(100vh - 200px);top: 70px; left:10px; text-align:center; background-color:#121212; border-radius: 20px;">
         <button data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Search" onclick="openURL('/html/search')" class="w3-bar-item w3-button w3-large" style="text-align: center;"> <i class="fa fa-search"></i></button>
         <!-- <a href="/search_auto" class="w3-bar-item w3-button w3-large" style="text-align: center;"> <i class="fa fa-search"></i></a> -->
         <button  data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Your Playlists" onclick="openURL('/html/your_playlists')" class="w3-bar-item w3-button w3-large" style="text-align: center;"><i class="fa-solid fa-rectangle-list"></i></button>
 
         <!-- <a href="/your_playlists" class="w3-bar-item w3-button w3-large" style="text-align: center;"><i class="fa-solid fa-rectangle-list"></i></a> -->
-        <button data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Browse" onclick="openURL('/html/browse')" class="w3-bar-item w3-button w3-large" style="text-align: center;"><i class="fa-solid fa-folder"></i></button>
         <hr>
         <!-- <a href="/browse" class="w3-bar-item w3-button w3-large" style="text-align: center;"><i class="fa-solid fa-folder"></i></a> -->
-        {% for list in playlist %}
-            <button data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="{{ list[1]}}" onclick="openURL('/html/playlist?p={{ list[0] }}')" class="w3-bar-item w3-button w3-large" style="text-align: center;"><i class="fa-solid fa-music"></i></a>
-        {% endfor %}
+    {% for list in playlist %}
+      <button
+        data-bs-toggle="tooltip"
+        data-bs-placement="right"
+        data-bs-title="{{ list['name']}}"
+        onclick="openURL('/html/playlist?p={{ list['id'] }}')"
+        class="w3-bar-item w3-button w3-large"
+        style="text-align: center;"
+        data-playlist-id="{{ list['id'] }}"
+        ondragover="event.preventDefault(); this.classList.add('drop-hover'); onPlaylistDragOver(event, this)"
+        ondragenter="event.preventDefault(); this.classList.add('drop-hover'); onPlaylistDragEnter(event, this)"
+        ondragleave="this.classList.remove('drop-hover'); onPlaylistDragLeave(event, this)"
+        ondrop="event.preventDefault(); this.classList.remove('drop-hover'); onPlaylistDrop(event, this)"
+      >
+        <i class="{{ list['icon'] }}"></i>
+      </button>
+    {% endfor %}
       </div>
 
     <div class="main greyish-back" id="main">
@@ -250,12 +217,16 @@
         </div>
         <div id="song-info">
             <span id="song-name">Song Name</span>
-            <br>
             <span id="song-artist">Artist Name</span>
         </div>
         <div class="audio_controls">
 
-            <button onmouseenter="tooltip('Shuffle')" onmouseleave="tooltipClose()" id="shuffle-button"><i class="fa-solid fa-shuffle"></i></button>
+            <button onmouseenter="tooltip('Shuffle')" onmouseleave="tooltipClose()" id="shuffle-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" style="width:25px; height: 25px; fill: #007bff;">
+              <!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
+              <path
+                d="M467.8 98.4C479.8 93.4 493.5 96.2 502.7 105.3L566.7 169.3C572.7 175.3 576.1 183.4 576.1 191.9C576.1 200.4 572.7 208.5 566.7 214.5L502.7 278.5C493.5 287.7 479.8 290.4 467.8 285.4C455.8 280.4 448 268.9 448 256L448 224L416 224C405.9 224 396.4 228.7 390.4 236.8L358 280L318 226.7L339.2 198.4C357.3 174.2 385.8 160 416 160L448 160L448 128C448 115.1 455.8 103.4 467.8 98.4zM218 360L258 413.3L236.8 441.6C218.7 465.8 190.2 480 160 480L96 480C78.3 480 64 465.7 64 448C64 430.3 78.3 416 96 416L160 416C170.1 416 179.6 411.3 185.6 403.2L218 360zM502.6 534.6C493.4 543.8 479.7 546.5 467.7 541.5C455.7 536.5 448 524.9 448 512L448 480L416 480C385.8 480 357.3 465.8 339.2 441.6L185.6 236.8C179.6 228.7 170.1 224 160 224L96 224C78.3 224 64 209.7 64 192C64 174.3 78.3 160 96 160L160 160C190.2 160 218.7 174.2 236.8 198.4L390.4 403.2C396.4 411.3 405.9 416 416 416L448 416L448 384C448 371.1 455.8 359.4 467.8 354.4C479.8 349.4 493.5 352.2 502.7 361.3L566.7 425.3C572.7 431.3 576.1 439.4 576.1 447.9C576.1 456.4 572.7 464.5 566.7 470.5L502.7 534.5z" />
+              <!-- Active indicator dot -->
+            </svg></button>
 
             <button onmouseenter="tooltip('Prev song')" onmouseleave="tooltipClose()" id="prev-button"><i class="fas fa-backward"></i></button>
             <button onmouseenter="tooltip('Play/Pause')" onmouseleave="tooltipClose()" id="play-pause-button"><i class="fas fa-play"></i></button>

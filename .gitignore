@@ -1,0 +1,39 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.venv/
+ENV/
+env/
+
+# OS files
+.DS_Store
+
+# Flask/instance and session data
+instance/
+flask_session/
+
+# Logs
+logs/
+*.log
+
+# Local databases
+*.sqlite
+*.sqlite3
+
+# Node
+node_modules/
+
+# Python tooling
+.pytest_cache/
+.mypy_cache/
+.tox/
+.coverage
+coverage.xml
+
+# Editor
+.vscode/
+.idea/

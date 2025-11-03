@@ -1,50 +1,170 @@
-
+<!-- Updates Page: Latest Added Songs with drag-to-playlist + context menu -->
 <style>
-.content {
-  max-width: 500px;
-  padding-left: 20%;
-  margin: auto;
-}
+  :root {
+    --bg: #121212;
+    --bg-soft: #1e1e1e;
+    --text: #e6e6e6;
+    --muted: #aaaaaa;
+    --accent: #1db954;
+    --border: #2a2a2a;
+  }
+
+  .page {
+    max-width: 1100px;
+    margin: 24px auto;
+    padding: 0 16px;
+  }
+
+  .updates-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .updates-header h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+  }
+
+  .updates-header .sub {
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  .panel {
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  table.tracklist {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  table.tracklist th,
+  table.tracklist td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  table.tracklist th {
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    font-size: 12px;
+  }
+
+  table.tracklist tr:hover {
+    background: #242424;
+  }
+
+  .thumb {
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    object-fit: cover;
+    background: #0b0b0b;
+    border: 1px solid var(--border);
+  }
+
+  /* Drag feedback matches play.html */
+  table.tracklist tr.dragging {
+    opacity: .6;
+  }
+
+  table.tracklist tr[draggable="true"] {
+    cursor: grab;
+  }
+
+  table.tracklist tr[draggable="true"]:active {
+    cursor: grabbing;
+  }
+
+  .cell-actions {
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .muted {
+    color: var(--muted);
+  }
+
+  @media (max-width: 640px) {
+    .col-cover {
+      width: 56px;
+    }
+
+    .hide-sm {
+      display: none;
+    }
+  }
 </style>
-    <h1>Browse</h1>
-                <br>
-                <table class="table text-white" style="width: 75%; margin: auto;">
-                    <thead>
-                      <tr>
 
-                        <th scope="col">Title</th>
-                        <th scope="col">Artist</th>
+<div class="page">
+  <div class="updates-header">
+    <h1>Updates</h1>
+    <div class="sub">Latest added songs</div>
+  </div>
 
-                        <th scope="col"></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                    {% for song in songs %}
-                      <tr>
-                        <td><button onclick="startSong({{song['id']}})" style="background-color: transparent; color: white; border-style: none;">{{song['name']}}</button></td>
-                        <td>{{song['artist']}}</td>
-                        <td>
-                          <div class="dropdown-center">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: #121212;"></button>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-dark">
-                              <li><a class="dropdown-item" onclick="addQueue({{song['id']}})">Add to Queue</a></li>
-                              <li><hr class="dropdown-divider" style="background-color: white;"></li>
-                              {% for list in playlist%}
-                              <li><a class="dropdown-item" onclick="add_deleteSong({{song['id']}}, {{list[0]}})">{{list[1]}}</a></li>
-                              {% endfor %}
-                            </ul>
-                          </div>
+  <div class="panel" style="margin-top:16px;">
+    <table class="tracklist" aria-label="Latest songs">
+      <thead>
+        <tr>
+          <th class="col-cover">Cover</th>
+          <th>Title</th>
+          <th class="hide-sm">Artist</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if songs and songs|length > 0 %}
+        {% for song in songs %}
+        <tr class="data-track" role="row" data-song-id="{{song['id']}}" data-artist="{{song['artist']}}"
+          data-name="{{song['name']}}" draggable="true" ondragstart="onSongRowDragStart(event)"
+          ondragend="onSongRowDragEnd(event)" onclick="startSong(+this.dataset.songId)">
+          <td>
+            {% if song['image'] is defined and song['image'] %}
+            <img class="thumb" src="{{ song['image'] }}" alt="Cover" loading="lazy" referrerpolicy="no-referrer"
+              onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'40\' height=\'40\'><rect width=\'100%\' height=\'100%\' fill=\'%231e1e1e\'/><text x=\'50%\' y=\'55%\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-size=\'16\' fill=\'%23666\'>♪</text></svg>'" />
+            {% else %}
+            <div class="thumb" aria-hidden="true" style="display:grid;place-items:center;color:#666;">♪</div>
+            {% endif %}
+          </td>
+          <td>{{ song['name'] }}</td>
+          <td class="hide-sm">{{ song['artist'] }}</td>
 
-                        </td>
-                      </tr>
-                      {% endfor %}
-                    </tbody>
-                  </table><br>
-                  <br>
-                  <br>
-                  <br>
+        </tr>
+        {% endfor %}
+        {% else %}
+        <tr>
+          <td colspan="4" class="muted" style="text-align:center;padding:20px;">No recent songs</td>
+        </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
 
-
-
-          </ul>
+<!-- Notes:
+ - Rows use .data-track with data-song-id/artist/name and draggable handlers so:
+   • Right-click opens the unified context menu (handled globally in script.js)
+   • Dragging a row onto a playlist icon in the sidebar adds the song to that playlist
+ - The dropdown menu items are populated client-side via populatePlaylistDropdowns() in script.js
+-->
+<script>
+  // Populate the action dropdowns with playlists, if script.js is loaded
+  if (typeof populatePlaylistDropdowns === 'function') {
+    document.addEventListener('DOMContentLoaded', function () {
+      try { populatePlaylistDropdowns(); } catch (e) { }
+    });
+    // Fallback immediate call (in case DOMContentLoaded already fired)
+    try { populatePlaylistDropdowns(); } catch (e) { }
+  }
+  // Ensure unified context menu is ready even on partial loads
+  if (typeof setupUnifiedContextMenu === 'function') {
+    try { setupUnifiedContextMenu(); } catch (e) { }
+  }
+</script>
