@@ -1,0 +1,149 @@
+{% extends 'basic.html' %}
+{% block content %}
+<!-- Button trigger modal -->
+<!-- Modal -->
+<div class="modal fade" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Add Songs to {{song_name}}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col"></th>
+              <th scope="col">Title</th>
+              <th scope="col">Artist</th>
+              <th scope="col">Playlist</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for song in all_songs %}
+            <tr>
+              <td><a class="btn btn-outline-secondary btn-sm" role="button" aria-disabled="true" href="/play?p={{song['id']}}"><i class="fa-solid fa-circle-play"></i></a></td>
+              <td>{{song['name']}}</td>
+              <td>{{song['artist']}}</td>
+              <td>
+                <a href="/add?song={{song['id']}}&list={{play_id}}" class="btn btn-outline-success"><i class="fa-solid fa-plus"></i></a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- <style>
+  /* Custom icon styles */
+  #controls button {
+    font-size: 24px;
+    background: none;
+    border: none;
+    color: #007bff;
+    cursor: pointer;
+    margin: 0 10px;
+  }
+
+  #controls button:hover {
+    color: #0056b3;
+  }
+
+  #controls button:focus {
+    outline: none;
+  }
+
+  #volume-container {
+    display: flex;
+    align-items: center;
+    margin-left: 10px;
+  }
+
+  #volume-slider {
+    margin-left: 5px;
+    width: 100px;
+  }
+</style> -->
+
+<h1>{{song_name}}</h1>
+{% if check == 0 %}
+<h5 id="duration"></h5>
+{% endif %}
+<div id="player-container">
+  <!-- <img id="album-art" src="" alt="Album Art" /> -->
+  <!-- <div id="song-info">
+    <p id="song-name">Song Name</p>
+    <p id="song-artist">Artist Name</p>
+  </div> -->
+  <!-- <audio id="player" preload="metadata"></audio> -->
+  <div id="controls">
+    <!-- <button id="prev-button"><i class="fas fa-backward"></i></button>
+    <button id="play-pause-button"><i class="fas fa-play"></i></button>
+    <button id="next-button"><i class="fas fa-forward"></i></button>
+    {% if check == 0 %}
+    <br>
+    <button id="shuffle-button"><i class="fa-solid fa-shuffle"></i></button>
+    <button id="loop-button" onclick="loopToggle()"><i class="fa-solid fa-infinity"></i></button>
+    {% endif %} -->
+    <!-- Volume Control -->
+  </div>
+
+  <br>
+  <br>
+  {% if check == 0 %}
+  <ul class="list-group">
+    <table class="table text-white greyish-back">
+      <thead>
+        <tr>
+          <th scope="col"></th>
+          <th scope="col">Title</th>
+          <th scope="col">Artist</th>
+          <th scope="col">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal1">Edit</button>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for song in list %}
+        <tr >
+          <td><a class="btn btn-outline-secondary btn-sm" role="button" aria-disabled="true" href="/play?p={{song['id']}}"><i class="fa-solid fa-circle-play"></i></a></td>
+          <td>{{song['name']}}</td>
+          <td>{{song['artist']}}</td>
+          <td>
+            <a href="/add?song={{song['id']}}&list={{play_id}}" class="btn btn-outline-danger"><i class="fa-solid fa-minus"></i></a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </ul>
+  </div>
+
+  {% endif %}
+  <body onload="setStatus()" check="{{check}}">
+  </body>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const player = document.getElementById('player');
+      const volumeSlider = document.getElementById('volume-slider');
+
+      // Set initial volume
+      player.volume = volumeSlider.value / 100;
+
+      volumeSlider.addEventListener('input', function() {
+        player.volume = this.value / 100;
+      });
+
+      // Update volume slider when volume changes programmatically
+      player.addEventListener('volumechange', function() {
+        volumeSlider.value = player.volume * 100;
+      });
+    });
+  </script>
+{% endblock %}

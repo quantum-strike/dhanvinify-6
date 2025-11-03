@@ -1,0 +1,199 @@
+.greyish-back{
+    background-color: #121212;
+}
+
+.text-white{
+    color: white;
+}.dhan-sidebar{
+    border-radius: 20px;
+}
+.main {
+    padding-top: 20px;
+    top: 70px; /* Adjust based on your layout */
+    left: 120px;
+    right: 15px;
+    border-radius: 20px;
+    color: white;
+    position: fixed;
+    /* height: calc(100vh - 85px); */
+
+    height: calc(100vh - 200px); /* Adjust based on your layout */
+    overflow: scroll;
+}
+
+body {
+    font-family: "Inter", system-ui;
+    text-align: center;
+    background-color: black;
+    color: rgb(245, 236, 220);
+    overflow: hidden;
+}
+#icon{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 35px;
+    height: auto;
+    margin: auto;
+  }
+body {
+    min-width: 1200px; /* Set your desired minimum width */
+    overflow-x: hidden;  /* Allow horizontal scrolling if the window is too small */
+}
+
+
+#player-container {
+    margin: 20px auto;
+    max-width: 600px;
+}
+
+#album-art {
+    width:70px;
+    height: auto;
+    border-radius: 20px;
+    filter: drop-shadow(-8px 9px 8px #4444dd64);
+}
+
+
+
+
+
+
+.hide1{
+    display: none;
+}
+.show1{
+    position: fixed;
+    top: 1px;
+    right: 80px;
+}
+.show2{
+    position: fixed;
+    top: 10px;
+    right: 140px;
+}
+.user{
+    position: fixed;
+    top: 0px;
+    right: 10px;
+}
+
+.art{
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+}
+#song-info {
+    display: inline-block; /* or flex */
+    font-size: 12px;
+    text-align: start;
+    position: fixed;
+    bottom: 40px;
+    left: 120px;
+    width: 40%;
+}
+
+#song-name,
+#song-artist {
+    display: block; /* or inline-block */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 40%; /* Ensure this matches the parent width */
+}
+
+
+.audio_controls{
+    position: fixed;
+    left: 50%;
+    bottom: 60px;
+    transform: translate(-50%, 0);
+}
+
+.audio_controls button {
+    font-size: 20px;
+    background: none;
+    border: none;
+    color: #007bff;
+    cursor: pointer;
+    margin: 0 10px;
+  }
+
+.audio_controls button:hover {
+    color: #0056b3;
+  }
+
+.audio_controls button:focus {
+    outline: none;
+  }
+
+  #seek-container {
+    bottom: 20px;
+    position: fixed;
+    left: 50%;
+    transform: translate(-50%, 0);
+}
+
+#seek-bar {
+    width: 40%;
+}
+
+#volume-container{
+    position: fixed;
+    bottom: 50px;
+    right:40px;
+}
+
+#queue_toggle{
+    background-color: black;
+    border-style: none;
+    color: white;
+    position: fixed;
+    bottom: 50px;
+    right: 220px;
+}
+
+#bottom_bar{
+    min-width: 1200px;
+}
+
+@media (max-width: 750px) {
+    body {
+        transform: scale(0.5); /* Adjust the scale as needed */
+        transform-origin: top left; /* Ensures the content scales from the top left */
+        overflow: hidden; /* Prevents scrolling */
+        width: 125%; /* Adjust width to prevent clipping */
+    }
+}
+
+#notify{
+    bottom: 150px;
+    position: fixed;
+    left: 50%;
+    transform: translate(-50%, 0);
+    width: fit-content;
+    max-width: 30%;
+    height: fit-content;
+    padding: 10px;
+    border-radius: 20px;
+    border: 2px solid white;
+    display: none;
+    color: white;
+}
+.modal-play{
+    top: 100px;
+    position: fixed;
+    left: 54%;
+    transform: translate(-50%, 0);
+    width: 50%;
+    height: fit-content;
+    max-height: 60vh;
+    padding: 10px;
+    display: none;
+    background-color:#121212 ;
+    border-radius: 20px;
+    box-shadow: 0px 4px 10px 1000px rgba(79, 79, 79, 0.534);
+    overflow: scroll;
+    padding: 20px;
+
+}

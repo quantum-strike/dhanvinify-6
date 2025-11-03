@@ -1,0 +1,29 @@
+
+<style>
+    .card{
+        margin: auto;
+        max-width: 500%;
+    }
+</style>
+
+    <h1>Your Playlists <h3><span class="badge text-bg-secondary"><a href="/add_playlist" style="color: white; text-decoration: none;">New</a></span></h3></h1>
+    {{message}}
+    {% if check == 'none'%}
+    <br>
+    <h4 style="color: coral;">Nothing here to show!</h4>
+    {% else %}
+        <br>
+        {% for song in songs %}
+        <div class="card" style="width: 18rem; background-color:#414141">
+            <div class="card-body">
+              <h5 class="card-title"><strong>{{song['name']}}</strong></h5>
+              <h6 class="card-subtitle mb-2 text-body-secondary">By {{name}}</h6>
+              <button ontouchstart="openURL('/html/playlist?p={{ song['id'] }}')" class="card-link">Listen</button>
+              <!-- <a style="color: lightcoral;" href="/del_playlist?id={{song['id']}}" class="card-link">Delete Playlist</a> -->
+            </div>
+          </div>
+          <br>
+        </li>
+        {% endfor %}
+    {% endif %}
+

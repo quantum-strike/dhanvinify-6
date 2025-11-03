@@ -1,0 +1,50 @@
+
+<style>
+.content {
+  max-width: 500px;
+  padding-left: 20%;
+  margin: auto;
+}
+</style>
+    <h1>Browse</h1>
+                <br>
+                <table class="table text-white" style="width: 75%; margin: auto;">
+                    <thead>
+                      <tr>
+
+                        <th scope="col">Title</th>
+                        <th scope="col">Artist</th>
+
+                        <th scope="col"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    {% for song in songs %}
+                      <tr>
+                        <td><button onclick="startSong({{song['id']}})" style="background-color: transparent; color: white; border-style: none;">{{song['name']}}</button></td>
+                        <td>{{song['artist']}}</td>
+                        <td>
+                          <div class="dropdown-center">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: #121212;"></button>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-dark">
+                              <li><a class="dropdown-item" onclick="addQueue({{song['id']}})">Add to Queue</a></li>
+                              <li><hr class="dropdown-divider" style="background-color: white;"></li>
+                              {% for list in playlist%}
+                              <li><a class="dropdown-item" onclick="add_deleteSong({{song['id']}}, {{list[0]}})">{{list[1]}}</a></li>
+                              {% endfor %}
+                            </ul>
+                          </div>
+
+                        </td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table><br>
+                  <br>
+                  <br>
+                  <br>
+
+
+
+          </ul>

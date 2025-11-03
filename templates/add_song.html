@@ -1,0 +1,126 @@
+{% extends 'basic.html' %}
+{% block content %}
+    <h1>Add a song!</h1>
+    <form action="/add_song" >
+        <div class="mb-3" style="width:400px; margin: auto;">
+            <label class="form-label">Upload Track</label>
+            <input name="file" type="file" class="form-control" id="fileInput" required>
+            <button type="button" class="btn btn-secondary" onclick="uploadToGitHub()" id="uploadbtn">Upload to GitHub</button>
+        </div>
+        <div class="mb-3" style="width:400px; margin: auto;">
+          <label for="exampleInputEmail1" class="form-label">Name</label>
+          <input  name="name" type="text" class="form-control" id="titleInput" aria-describedby="emailHelp">
+        </div>
+        <div class="mb-3" style="width:400px; margin: auto;">
+            <label for="exampleInputEmail1" class="form-label">Artist</label>
+            <input name="artist" type="text" class="form-control" id="artistInput" aria-describedby="emailHelp">
+          </div>
+          <div class="mb-3" style="width:400px; margin: auto;">
+            <label for="exampleInputEmail1" class="form-label">Track URL</label>
+            <input name="track" type="text" class="form-control" id="trackUrlInput" aria-describedby="emailHelp" readonly>
+          </div>
+          <div class="mb-3" style="width:400px; margin: auto;">
+            <label for="exampleInputEmail1" class="form-label">Image URL</label>
+            <input type="text" name="image" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+          </div>
+        <div class="mb-3" style="width:400px; margin: auto;">
+            <label for="exampleInputEmail1" class="form-label">Duration (sec)</label>
+            <input type="text" name="duration" class="form-control" id="durationInput" aria-describedby="emailHelp">
+          </div>
+          <div class="mb-3" style="width:400px; margin: auto;">
+            <label for="exampleInputEmail1" class="form-label">Lang (tamil or english)</label>
+            <input type="text" name="lang" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+          </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+<script src="https://cdn.jsdelivr.net/npm/jsmediatags@3.9.7/dist/jsmediatags.min.js"></script>
+<script>
+const GITHUB_TOKEN = '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'; // ⚠️ Replace with your token
+const REPO_OWNER = 'quantum-strike';
+const REPO_NAME = 'songs';
+const BRANCH = 'main';
+document.getElementById('fileInput').addEventListener('change', function () {
+  const file = this.files[0];
+  if (!file) return;
+
+  // Read metadata (title, artist) using jsmediatags
+  jsmediatags.read(file, {
+    onSuccess: function(tag) {
+      const tags = tag.tags;
+      document.getElementById('titleInput').value = tags.title || file.name;
+      document.getElementById('artistInput').value = tags.artist.replace(/\//g, ', ') || "Unknown Artist";
+    },
+    onError: function(error) {
+      console.log("Tag read error:", error);
+    }
+  });
+
+  // Get duration using Web Audio API
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const reader = new FileReader();
+
+  reader.onload = function() {
+    audioCtx.decodeAudioData(reader.result).then(function(buffer) {
+      const durationInSeconds = Math.round(buffer.duration);
+      document.getElementById('durationInput').value = durationInSeconds;
+    });
+  };
+
+  reader.readAsArrayBuffer(file);
+});
+async function uploadToGitHub() {
+  const fileInput = document.getElementById('fileInput');
+  const trackInput = document.getElementById('trackUrlInput');
+  const uploadbtn = document.getElementById('uploadbtn');
+
+  if (!fileInput.files.length) {
+    alert('Please select a file first.');
+    return;
+  }
+uploadbtn.innerText="Uploading..."
+  const file = fileInput.files[0];
+  const reader = new FileReader();
+
+reader.onload = async () => {
+  const content = reader.result.split(',')[1]; // Base64 content
+
+  const originalPath = `songs/${file.name}`;
+  const encodedPath = encodeURIComponent(originalPath); // ✅ escapes spaces and special chars
+  const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${encodedPath}`;
+
+  const res = await fetch(url, {
+    method: 'PUT',
+    headers: {
+      'Authorization': `token ${GITHUB_TOKEN}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      message: `Add ${file.name}`,
+      content: content,
+      branch: BRANCH
+    })
+  });
+
+  const data = await res.json();
+
+  if (res.ok) {
+    // For the raw link, DO NOT encode — GitHub needs the plain path
+    const rawUrl = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${BRANCH}/${encodedPath}`;
+    console.log(rawUrl);
+    trackInput.value = rawUrl;
+    console.log("Uploaded");
+    uploadbtn.innerText="Uploaded"
+
+  } else {
+    console.error(data);
+    alert('Upload failed: ' + data.message);
+  }
+};
+
+reader.readAsDataURL(file);
+
+}
+</script>
+
+
+{% endblock %}

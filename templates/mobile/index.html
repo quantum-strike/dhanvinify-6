@@ -1,0 +1,59 @@
+{% extends 'mobile/basic.html' %}
+{% block content %}
+<style>
+    .actions {
+        max-width: 500px;
+        margin: auto;
+    }
+    #search {
+        max-width: 500px;
+        margin: auto;
+    }
+    .recc {
+        max-width: 800px;
+        margin: auto;
+        padding: 20px;
+    }
+    .card {
+        max-width: 300px;
+        margin: auto;
+    }
+</style>
+    <h1>Hello <strong>{{name}}</strong>!</h1>
+
+    {{message}}
+
+    <br>
+    <div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">
+        <button onclick="openURL('/html/browse')" class="btn btn-secondary"><i class="fa-solid fa-folder"></i> Browse</button>
+        <button onclick="openURL('/html/mobile/search')" class="btn btn-secondary"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+        <button onclick="openURL('/html/your_playlists')" class="btn btn-secondary"><i class="fa-solid fa-rectangle-list"></i> Your Playlists</button>
+    </div>
+    <br>
+    <br>
+    <h3>Recommended</h3>
+    <div class="container recc">
+        <div class="row justify-content-center">
+            <div class="card-group">
+                {% for song in reccomend %}
+                    <div class="card" style="background-color: #414141;">
+                        <img src="{{song['image']}}" class="card-img-top" alt="{{song['name']}}" style="height: 300px; width:auto;">
+                        <div class="card-body">
+                            <h5 class="card-title">{{song['name']}}</h5>
+                            <span class="card-text" style=" text-align:center;white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; max-width: 95%;">
+                                {{song['artist']}}
+                              </span>
+                            <br>
+                            
+                            
+                            <button onclick="startSong({{ song['id'] }})" class="btn btn-outline-success">Listen</button>
+                        </div>
+                        <div class="card-footer">
+                            <small class="text-body-secondary">Recommended for {{name}}</small>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends 'basic.html' %}
+{% block content %}
+<style>
+.content {
+  max-width: 500px;
+  padding-left: 20%;
+  margin: auto;
+}
+</style>
+    <h1>Search results: {{search}}</h1>
+    <br>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col"></th>
+          <th scope="col">Title</th>
+          <th scope="col">Artist</th>
+
+          <th scope="col">Playlist</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for song in songs %}
+        <tr>
+          <td><a class="btn btn-outline-secondary btn-sm" role="button" aria-disabled="true" href="/play?p={{song['id']}}"><i class="fa-solid fa-circle-play"></i></a></td>
+          <td>{{song['name']}}</td>
+          <td>{{song['artist']}}</td>
+          <td>
+          <div class="dropdown">
+              <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="fa-solid fa-plus-minus"></i>
+              </button>
+              <ul class="dropdown-menu">
+                  {% for list in playlist%}
+                  <li><a class="dropdown-item" href="/add?song={{song['id']}}&list={{list[0]}}">{{list[1]}}</a></li>
+                  {% endfor %}
+              </ul>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+{% endblock %}

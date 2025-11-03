@@ -1,0 +1,20 @@
+<div style="background-image: linear-gradient(#e1004fae, #571ce2ab); width: 80%; margin: auto; border-radius: 20px; padding: 10px;">
+  <h1 style="display: inline-block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 99%;">{{artist_name}}</h1>
+
+</div>
+  <div style="padding-left: 10%; padding-right: 10%; padding-bottom: 10%;">
+    <br>
+    {% for song in song_list %}
+    <div class="card greyish-back" style="text-align: start; border: 1px solid white;">
+      <div class="card-body">
+        <img src="{{ song['image'] }}" alt="" style="width:25px; border-radius: 5px;">
+        <button onclick="startSong({{ song['id'] }})" style="text-align: left; background-color: transparent; color: white; border-style: none; display: inline-block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 90%;">{{ song['name'] }}</button>
+
+      </div>
+    </div>
+    <br>
+    {% endfor %}
+  </div>
+  <body onload="setStatus()" check="{{check}}">
+  </body>
+

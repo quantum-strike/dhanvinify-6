@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" sizes="any">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='mobile.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='w3.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+
+    <title>DhanTune</title>
+</head>
+<body>
+    <!-- <div class="top_bar">
+
+    </div> -->
+    <!-- Toggle Button for Sidebar -->
+    <!-- <button class="btn btn-primary sidebar-toggle" type="button" id="sidebarToggle">
+        <i class="fa-solid fa-bars"></i>
+    </button> -->
+
+    <!-- Modal -->
+<!-- Button to Open the Modal -->
+
+
+  <!-- The Modal -->
+  <div class="modal fade " id="myModal">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content" style="background-color: #121212; color:white">
+
+        <!-- Modal Header -->
+        <div class="modal-header" style="text-align: center;">
+          <h4 class="modal-title">What's New</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <!-- Modal body -->
+        <div class="modal-body" style="text-align:left; width:100%;">
+            <div class="card greyish-back" style="border: 1px solid white; ">
+                <div class="card-body">
+                  Lots of bugs have been squashed!
+                </div>
+              </div>
+              <br>
+              <div class="card greyish-back" style="border: 1px solid white; ">
+                <div class="card-body">
+                  Shuffle now retains across playlists!
+                </div>
+              </div>
+              <br>
+              <div class="card greyish-back" style="border: 1px solid white; ">
+                <div class="card-body">
+                  You can now click on song names to jump to it! (In search, browse and queue)
+                </div>
+              </div>
+              <br>
+              <div class="card greyish-back" style="border: 1px solid white; ">
+                <div class="card-body">
+                  Search, with language filter!
+                </div>
+              </div>
+              <div class="card greyish-back" style="border: 1px solid white; ">
+                <div class="card-body">
+                  Finally, new songs
+                </div>
+              </div>
+
+        </div>
+
+        <!-- Modal footer -->
+        <div class="modal-footer" >
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Back to Music!</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+    <div class="offcanvas offcanvas-end custom-offcanvas" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+        <div class="offcanvas-header text-white greyish-back">
+          <h5 class="offcanvas-title" id="offcanvasRightLabel">{{song_name}} - <strong>Queue</strong></h5>
+          <button type="button" class="greyish-back text-white" data-bs-dismiss="offcanvas" aria-label="Close" style="border-style: none;"><i class="fa-solid fa-x"></i></button>
+        </div>
+        <div class="offcanvas-body text-white greyish-back">
+          <table class="table text-white greyish-back">
+            <thead>
+              <tr>
+                <!-- <th scope="col"></th> -->
+                <th scope="col">Title</th>
+                <th scope="col">Artist</th>
+              </tr>
+            </thead>
+            <tbody id="queue">
+            </tbody>
+          </table>
+        </div>
+      </div>
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Search</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form class="d-flex" role="search" action="/search" method="get" id="search">
+                        <input autofocus class="form-control me-2" name="search" type="search" placeholder="search" aria-label="Search">
+                        <div class="modal-footer">
+                            <button class="btn btn-outline-success" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- <div class="container-fluid">
+        <div class="row flex-nowrap">
+            <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark" id="sidebar">
+                <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
+                    <a href="/" class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+                        <span class="fs-5 d-none d-sm-inline"></span>
+                    </a>
+                    <br>
+                    <br>
+                    <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
+                        <li class="nav-item">
+                            <a style="color: burlywood;" href="/search_auto" class="nav-link align-middle px-0">
+                                <i class="fa-solid fa-magnifying-glass"></i><span class="ms-1 d-none d-sm-inline"> Search</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/" class="nav-link align-middle px-0" style="color: burlywood;">
+                                <i class="fa-solid fa-house"></i> <span class="ms-1 d-none d-sm-inline">Home</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/browse" class="nav-link align-middle px-0" style="color: burlywood;">
+                                <i class="fa-solid fa-folder"></i> <span class="ms-1 d-none d-sm-inline">Browse</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/your_playlists" class="nav-link align-middle px-0" style="color: burlywood;">
+                                <i class="fa-solid fa-rectangle-list"></i> <span class="ms-1 d-none d-sm-inline">Your Playlists</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#submenu1" data-bs-toggle="collapse" class="nav-link px-0 align-middle">
+                                <br>
+                                <a href="/add_playlist" class="nav-link px-0"><i class="fa-solid fa-folder-plus" style="color:lightcoral;"></i></a>
+                                {% for list in playlist %}
+                                <li>
+                                    <a href="/playlist?p={{ list[0] }}" class="nav-link px-0"><i class="fa-solid fa-music"></i> <span class="ms-1 d-none d-sm-inline">{{ list[1] }}</span></a>
+                                </li>
+                                {% endfor %}
+                            </a>
+                        </li>
+                    </ul>
+                    <hr>
+                    <div class="dropdown pb-4">
+                        <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="{{ url_for('static', filename='icon.png') }}" alt="hugenerd" width="30" height="30" class="rounded-circle">
+                            <span class="d-none d-sm-inline mx-1"> {{ name }}</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
+                            <li><a class="dropdown-item" href="/logout">Sign out</a></li>
+                            <li><hr class="dropdown-divider">&nbsp;&nbsp;&nbsp;Version 2</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col py-3">
+
+            </div>
+        </div>
+    </div> -->
+    <div>
+        <audio id="player" preload="metadata"></audio>
+        <button id="more" ontouchstart="document.getElementById('bottom_bar').style.display = 'block'">
+          <img id="album-art-bottom" src="{{ url_for('static', filename='music.png') }}" alt="Album Art" />
+          &nbsp;
+          <span id="song-name-bottom">Song Name</span>
+        </button>
+        <div id="bottom_buttons">
+            <button onmouseenter="tooltip('Action: Search')" onmouseleave="tooltipClose()" onclick="openURL('/html/home')" class="bottom_button w3-button" style="text-align: center; "> <i class="fa-solid fa-house"></i></button>
+            <button onmouseenter="tooltip('Action: Search')" onmouseleave="tooltipClose()" onclick="openURL('/html/search')" class="bottom_button w3-button" style="text-align: center; "> <i class="fa fa-search"></i></button>
+            <button onmouseenter="tooltip('Action: Your Playlists')" onmouseleave="tooltipClose()" onclick="openURL('/html/your_playlists')" class="bottom_button w3-button" style="text-align: center;"><i class="fa-solid fa-rectangle-list"></i></button>
+            <button onmouseenter="tooltip('Action: Browse')" onmouseleave="tooltipClose()" onclick="openURL('/html/browse')" class="bottom_button w3-button" style="text-align: center;"><i class="fa-solid fa-folder"></i></button>
+        </div>
+        <!-- <button onmouseenter="tooltip('Action: Search')" onmouseleave="tooltipClose()" onclick="openURL('/html/search')" class="w3-bar-item w3-button w3-large" style="text-align: center;"> <i class="fa fa-search"></i></button> -->
+        <!-- <button onmouseenter="tooltip('Action: Your Playlists')" onmouseleave="tooltipClose()" onclick="openURL('/html/your_playlists')" class="w3-bar-item w3-button w3-large" style="text-align: center;"><i class="fa-solid fa-rectangle-list"></i></button> -->
+
+        <!-- <button onmouseenter="tooltip('Action: Browse')" onmouseleave="tooltipClose()" onclick="openURL('/html/browse')" class="w3-bar-item w3-button w3-large" style="text-align: center;"><i class="fa-solid fa-folder"></i></button> -->
+        <!-- <hr> -->
+        <!-- {% for list in playlist %}
+            <button onmouseenter="playlist_tooltip('Playlist: {{ list[1] }}')" onmouseleave="tooltipClose()" onclick="openURL('/html/playlist?p={{ list[0] }}')" class="w3-bar-item w3-button w3-large" style="text-align: center;"><i class="fa-solid fa-music"></i></a>
+        {% endfor %} -->
+    </div>
+
+    <div class="main greyish-back" id="main">
+        {% block content %}{% endblock %}
+    </div>
+
+
+
+    </div>
+    <div id="bottom_bar">
+      <br>
+      <div id="drag-container" ontouchstart="document.getElementById('bottom_bar').style.display = 'none'">
+          <div id="drag"></div>
+      </div>
+        <br>
+        <br>
+        <div class="art">
+            <img id="album-art" src="{{ url_for('static', filename='music.png') }}" alt="Album Art" />
+        </div>
+        <br>
+        <div id="song-info">
+          <span id="song-name">Not Playing</span>
+          <span id="song-artist">Play something!</span>
+      </div>
+      <br>
+      <div id="seek-container">
+        <input type="range" id="seek-bar" value="0" min="0" max="100" step="0.1">
+      </div>
+      <br>
+      <div class="audio_controls">
+
+
+        <button onmouseenter="tooltip('Prev song')" onmouseleave="tooltipClose()" id="prev-button"><i class="fas fa-backward"></i></button>
+        <button onmouseenter="tooltip('Play/Pause')" onmouseleave="tooltipClose()" id="play-pause-button"><i class="fas fa-play"></i></button>
+        <button onmouseenter="tooltip('Next Song')" onmouseleave="tooltipClose()" id="next-button"><i class="fas fa-forward"></i></button>
+        <br><br>
+        <button onmouseenter="tooltip('Shuffle')" onmouseleave="tooltipClose()" id="shuffle-button"><i class="fa-solid fa-shuffle"></i></button>
+        <button onmouseenter="tooltip('Loop')" onmouseleave="tooltipClose()" id="loop-button" onclick="loopToggle()"><i class="fa-solid fa-infinity"></i></button>
+
+      </div>
+        <!--
+
+
+          <div id="volume-container">
+            <i class="fas fa-volume-up"></i>
+            <input type="range" id="volume-slider" value="100" min="0" max="100" step="1">
+          </div>
+          <button onmouseenter="tooltip('Queue')" onmouseleave="tooltipClose()" id="queue_toggle" onclick="displayQueue()" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"><i class="fa-solid fa-bars-staggered"></i></button> -->
+
+    </div>
+    <div id="notify">
+    </div>
+
+    <script src="{{ url_for('static', filename='mobile.js') }}"></script>
+
+</body>
+</html>
